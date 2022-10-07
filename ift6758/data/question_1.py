@@ -1,4 +1,7 @@
 import pandas as pd
+import requests
+import json
+
 
 def get_player_stats(year: int, player_type: str) -> pd.DataFrame:
     """

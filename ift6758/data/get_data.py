@@ -15,15 +15,6 @@ def get_games_data(start:int, end:int, path:str) -> pd.DataFrame:
     COMPLETE!!!
     """
 
-    # file_path = folder_path + str(game_id) + '.json'
-    # if not os.path.isfile(file_path):
-    #     data = requests.get(f'https://statsapi.web.nhl.com/api/v1/game/{game_id}/feed/live/')
-    #     if (data.status_code == 404):
-    #         return None
-    #     with open(file_path, 'w') as f:
-    #         json.dump(data.json(), f)
-
-
     max_game_ID = 1272
     max_playoff = 398
     g_t = ['02','03']
