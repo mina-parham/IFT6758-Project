@@ -44,8 +44,6 @@ def tidy(df) -> pd.DataFrame:
                     goalie_name.append([allplays_data[j]['players'][z]['player']['fullName'] for z in range(len(allplays_data[j]['players']))][0])
                 empty_net.append(True if 'emptyNet' in allplays_data[j]['result'] and allplays_data[j]['result']['emptyNet']==True else False)
 
-
-
     assert(all(len(lists) == len(game_id) for lists in [event_idx, period_time, period, team_away_name, team_home_name, is_goal, coordinate_x,\
      coordinate_y, shot_type, strength, shooter_name, goalie_name, empty_net, team_name]) )
 
