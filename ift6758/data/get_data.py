@@ -16,7 +16,7 @@ def get_games_data(start:int, end:int, path:str) -> pd.DataFrame:
     """
 
     max_game_ID = 1272
-    max_playoff = 398
+    max_playoff = 420 #original 398 -> Changed to 420 as it seems that normally they play a 4th round in the final game (7), so it's possible to see 2017030417
     g_t = ['02','03']
     data = {}
     
