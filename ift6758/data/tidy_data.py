@@ -25,7 +25,7 @@ def tidy(df) -> pd.DataFrame:
     for i in range(df.shape[1]):
         allplays_data = df.iloc[:,i]['liveData']['plays']['allPlays']
         for j in range(len(allplays_data)):
-            if(allplays_data[j]['result']['eventTypeId'] == ("SHOT" or "GOAL")):
+            if(allplays_data[j]['result']['eventTypeId'] == "SHOT" or allplays_data[j]['result']['eventTypeId'] == "GOAL"):
                 period.append(allplays_data[j]['about']['period'])
                 period_time.append(allplays_data[j]['about']['periodTime'])
                 game_id.append(df.iloc[:,i].name)
@@ -38,7 +38,7 @@ def tidy(df) -> pd.DataFrame:
                 coordinate_y.append(allplays_data[j]['coordinates']['y'] if  'y' in allplays_data[j]['coordinates'] else np.nan)
                 shot_type.append(allplays_data[j]['result']['secondaryType'] if 'secondaryType' in allplays_data[j]['result'] else np.nan)
                 strength.append(allplays_data[j]['result']['strength']['code'] if 'strength' in allplays_data[j]['result'] else np.nan)
-                if (allplays_data[j]['players'][z]['playerType'] == ("Shooter" or 'Scorer') for z in range(len(allplays_data[j]['players']))):
+                if (allplays_data[j]['players'][z]['playerType'] == "Shooter" or allplays_data[j]['players'][z]['playerType'] =='Scorer' for z in range(len(allplays_data[j]['players']))):
                     shooter_name.append([allplays_data[j]['players'][z]['player']['fullName'] for z in range(len(allplays_data[j]['players']))][0])
                 if (allplays_data[j]['players'][z]['playerType']=="Goalie" for z in range(len(allplays_data[j]['players']))):
                     goalie_name.append([allplays_data[j]['players'][z]['player']['fullName'] for z in range(len(allplays_data[j]['players']))][0])
