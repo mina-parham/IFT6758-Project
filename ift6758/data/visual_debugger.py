@@ -4,10 +4,17 @@ import pandas as pd
 import numpy as np
 
 
-def get_title(left_team, right_team):                ##import both team names 
-    #Input:
-    #left_team: str, name of the team playing on the left side.
-    #right_team: str, name of the team playing on the right side.
+def get_title(left_team, right_team):
+    """
+
+    Input:
+    left_team: str, name of the team playing on the left side.
+    right_team: str, name of the team playing on the right side.
+    
+    Output:
+    String: Title updated according to the teams position during the event
+    """
+
     title_max_length = 76
     
     spaces_len = (title_max_length - len(left_team) - len(right_team)) // 2      ##TO set  title alignment 
@@ -15,14 +22,16 @@ def get_title(left_team, right_team):                ##import both team names
     return left_team + (' ' * spaces_len) + right_team
 
 def plot_event(coordinates, left_team, right_team):    
+    """
 
-    #Input:
-    #coordinates: tupple, it takes a tupple of integers signaling the x,y coordinates of the event.
-     #left_team: str, name of the team playing on the left side. The value is assigned based on the place where the play took place. ie. Canadiens vs Toronto .If the team responsible for the event is Canadiens and x is negative, the lef team is Toronto.
-    #right_team: str, name of the team playing on the right side. The value is assigned based on the place where the play took place. ie. Canadiens vs Toronto .If the team responsible for the event is #Canadiens and x is negative, the right team is Canadiens.
-    
-    #Output:
-    #- A plot of the play made in the rink image
+    Input:
+    coordinates: tupple, it takes a tupple of integers signaling the x,y coordinates of the event.
+     left_team: str, name of the team playing on the left side. The value is assigned based on the place where the play took place. ie. Canadiens vs Toronto .If the team responsible for the event is Canadiens and x is negative, the lef team is Toronto.
+    right_team: str, name of the team playing on the right side. The value is assigned based on the place where the play took place. ie. Canadiens vs Toronto .If the team responsible for the event is Canadiens and x is negative, the right team is Canadiens.
+
+    Output:
+    A plot of the play made on the rink image
+    """
     
     data = plt.imread('../figures/nhl_rink.png')     ## TO plot image
 
