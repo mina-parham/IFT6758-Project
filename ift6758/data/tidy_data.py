@@ -83,25 +83,33 @@ def tidy_step2(df) -> pd.DataFrame:
         """ 
         Returns the angle in radians between vectors 'v1 = (x_coor,y_coor)' and 'v2 (+/-89,0) -> Center of the net (left/right)'
         """
-        center_goal_1 = [89,0]
-        center_goal_2 = [-89,0]
+        center_goal_abs = [89,0]
+        #center_goal_1 = [89,0]
+        #center_goal_2 = [-89,0]
         angles = []
         for i in range(len(df['coordinate_x'])):
             p_v = [df['coordinate_x'][i],df['coordinate_y'][i]]
             if df['coordinate_x'][i] > 0:
-                v2 = center_goal_1
+                #v2 = center_goal_1
+                v2 = center_goal_abs
             else:
-                v2 = center_goal_2
+                #v2 = center_goal_2
+                v2 = center_goal_abs
             if df['coordinate_y'][i] == v2[1]:
                 angle = 0.0
             else:
-                angle = np.round_((np.arccos(np.dot(p_v,v2)/(norm(p_v)*norm(v2)))), decimals=4)
+                if v2[0] == np.absolute(p_v[0]):
+                    angle =np.round((np.arctan(((p_v[1]/(v2[0]))))),4)
+                else:
+                    #angle = np.round_((np.arccos(np.dot(p_v,v2)/(norm(p_v)*norm(v2)))), decimals=4)
+                    angle = np.round((np.arctan(((p_v[1]/(np.absolute(v2[0]) - p_v[0]))))),4)
             angles.append(angle)
         return angles
 
     
     df['distance'] = distance(df['coordinate_x'], df['coordinate_y'])
     df['angle'] = angle_between(df['coordinate_x'], df['coordinate_y'])
+    df['angle_d'] = df['angle'].apply(lambda x: np.rad2deg(x))
 
 
     return df
