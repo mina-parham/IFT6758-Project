@@ -189,46 +189,46 @@ def tidy_v2(df) -> pd.DataFrame:
 
     return df_main
 
-    def distance(x_coor, y_coor):
-        """
-        Computes the distances between the pock and the goal's center
-        Inputs:
-        x_coor: It takes the x coordinates
-        y_coor: It takes the y_coordinates
-        Outputs:
-        distance: List of all the distances of all the coordinates present in the data frame
-        """
-        center_goal = (89, 0)
-        x_distance_main = []
-        for i in x_coor:
-            x_distance = lambda i : center_goal[0] - i if i > 0  else -center_goal[0] - i
-            x_distance_main.append(x_distance(i))
-        distance = np.round_((np.sqrt(np.asarray(x_distance_main) **2 + (center_goal[1] - y_coor)**2)),decimals=4)
-        return distance
+def distance(x_coor, y_coor):
+    """
+    Computes the distances between the pock and the goal's center
+    Inputs:
+    x_coor: It takes the x coordinates
+    y_coor: It takes the y_coordinates
+    Outputs:
+    distance: List of all the distances of all the coordinates present in the data frame
+    """
+    center_goal = (89, 0)
+    x_distance_main = []
+    for i in x_coor:
+        x_distance = lambda i : center_goal[0] - i if i > 0  else -center_goal[0] - i
+        x_distance_main.append(x_distance(i))
+    distance = np.round_((np.sqrt(np.asarray(x_distance_main) **2 + (center_goal[1] - y_coor)**2)),decimals=4)
+    return distance
 
-    def angle_between(x_coor, y_coor):
-        """ 
-        Returns the angle in radians between vectors 'v1 = (x_coor,y_coor)' and 'v2 (+/-89,0) -> Center of the net (left/right)'
-        """
-        center_goal_1 = [89,0]
-        center_goal_2 = [-89,0]
-        angles = []
-        for i in range(len(df['coordinate_x'])):
-            p_v = [df['coordinate_x'][i],df['coordinate_y'][i]]
-            if df['coordinate_x'][i] > 0:
-                v2 = center_goal_1
-            else:
-                v2 = center_goal_2
-            if df['coordinate_y'][i] == v2[1]:
-                angle = 0.0
-            else:
-                angle = np.round_((np.arccos(np.dot(p_v,v2)/(norm(p_v)*norm(v2)))), decimals=4)
-            angles.append(angle)
-        return angles
-
-    
-    df['distance'] = distance(df['coordinate_x'], df['coordinate_y'])
-    df['angle'] = angle_between(df['coordinate_x'], df['coordinate_y'])
+# def angle_between(x_coor, y_coor):
+#     """ 
+#     Returns the angle in radians between vectors 'v1 = (x_coor,y_coor)' and 'v2 (+/-89,0) -> Center of the net (left/right)'
+#     """
+#     center_goal_1 = [89,0]
+#     center_goal_2 = [-89,0]
+#     angles = []
+#     for i in range(len(df['coordinate_x'])):
+#         p_v = [df['coordinate_x'][i],df['coordinate_y'][i]]
+#         if df['coordinate_x'][i] > 0:
+#             v2 = center_goal_1
+#         else:
+#             v2 = center_goal_2
+#         if df['coordinate_y'][i] == v2[1]:
+#             angle = 0.0
+#         else:
+#             angle = np.round_((np.arccos(np.dot(p_v,v2)/(norm(p_v)*norm(v2)))), decimals=4)
+#         angles.append(angle)
+#     return angles
 
 
-    return df
+# df['distance'] = distance(df['coordinate_x'], df['coordinate_y'])
+# df['angle'] = angle_between(df['coordinate_x'], df['coordinate_y'])
+
+
+# return df
