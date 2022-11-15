@@ -89,20 +89,19 @@ def tidy_step2(df) -> pd.DataFrame:
         angles = []
         for i in range(len(df['coordinate_x'])):
             p_v = [df['coordinate_x'][i],df['coordinate_y'][i]]
-            if df['coordinate_x'][i] > 0:
-                #v2 = center_goal_1
-                v2 = center_goal_abs
-            else:
-                #v2 = center_goal_2
-                v2 = center_goal_abs
+            v2 = center_goal_abs
             if df['coordinate_y'][i] == v2[1]:
                 angle = 0.0
             else:
                 if v2[0] == np.absolute(p_v[0]):
-                    angle =np.round((np.arctan(((p_v[1]/(v2[0]))))),4)
+                    angle = np.round((np.arctan(((np.absolute(p_v[1])/(v2[0]))))),4)
                 else:
                     #angle = np.round_((np.arccos(np.dot(p_v,v2)/(norm(p_v)*norm(v2)))), decimals=4)
-                    angle = np.round((np.arctan(((p_v[1]/(np.absolute(v2[0]) - p_v[0]))))),4)
+                    if np.absolute(p_v[0]) < v2[0]:
+                        angle = np.round((np.arctan(np.absolute(p_v[1])/(v2[0] - np.absolute(p_v[0])))),4)
+                    else:
+                        angle = np.round((np.arctan(np.absolute(p_v[1])/(np.absolute((np.absolute(p_v[0]) - v2[0]))))),4)
+                                       
             angles.append(angle)
         return angles
 
