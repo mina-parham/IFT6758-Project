@@ -163,3 +163,4 @@ cython_debug/
 notebooks/json/
 *.csv
 *.html
+.*

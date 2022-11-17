@@ -189,22 +189,22 @@ def tidy_v2(df) -> pd.DataFrame:
 
     return df_main
 
-def distance(x_coor, y_coor):
-    """
-    Computes the distances between the pock and the goal's center
-    Inputs:
-    x_coor: It takes the x coordinates
-    y_coor: It takes the y_coordinates
-    Outputs:
-    distance: List of all the distances of all the coordinates present in the data frame
-    """
-    center_goal = (89, 0)
-    x_distance_main = []
-    for i in x_coor:
-        x_distance = lambda i : center_goal[0] - i if i > 0  else -center_goal[0] - i
-        x_distance_main.append(x_distance(i))
-    distance = np.round_((np.sqrt(np.asarray(x_distance_main) **2 + (center_goal[1] - y_coor)**2)),decimals=4)
-    return distance
+# def distance(x_coor, y_coor):
+#     """
+#     Computes the distances between the pock and the goal's center
+#     Inputs:
+#     x_coor: It takes the x coordinates
+#     y_coor: It takes the y_coordinates
+#     Outputs:
+#     distance: List of all the distances of all the coordinates present in the data frame
+#     """
+#     center_goal = (89, 0)
+#     x_distance_main = []
+#     for i in x_coor:
+#         x_distance = lambda i : center_goal[0] - i if i > 0  else -center_goal[0] - i
+#         x_distance_main.append(x_distance(i))
+#     distance = np.round_((np.sqrt(np.asarray(x_distance_main) **2 + (center_goal[1] - y_coor)**2)),decimals=4)
+#     return distance
 
 # def angle_between(x_coor, y_coor):
 #     """ 

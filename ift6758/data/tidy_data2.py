@@ -3,8 +3,8 @@ import numpy as np
 from numpy.linalg import norm
 import math
 
-    
-def tiidy(df) -> pd.DataFrame:
+##rebound
+def tidy(df) -> pd.DataFrame:
     """
     Clean the json files downloaded with get_data.py function
 
@@ -26,14 +26,54 @@ def tiidy(df) -> pd.DataFrame:
     """
     event_idx, period_time, period, game_id, team_away_name, team_home_name, is_goal, coordinate_x,\
     coordinate_y, shot_type, strength, shooter_name, goalie_name, empty_net, team_name,\
-    event_type, last_type, last_coord_x,last_coord_y, last_period, last_period_time, rebound = ([] for i in range(22))
+    event_type, last_type, last_coord_x, last_coord_y, last_period, last_period_time, rebound, number_friendly, number_opposing,\
+         power_play = ([] for i in range(25))
     for i in range(df.shape[1]):
         allplays_data = df.iloc[:,i]['liveData']['plays']['allPlays']
+        p = {
+            'home_minor_2' : [],
+            'home_minor_4' : [],
+            'home_major' : [],
+            'away_minor_2' : [],
+            'away_minor_4' : [],
+            'away_major' : []
+        }
+        time_2 = 0.0
+        time_1 = 0
+        time_period_1 =0
+        time_period_2 = 0
         for j in range(len(allplays_data)):
+
+            time_1 = int(allplays_data[j]['about']['periodTime'][0:2])*60 +int(allplays_data[j]['about']['periodTime'][3:5])
+            time_period_1 = (allplays_data[j]['about']['period']-1)*1200
+
+            if j>0:
+                time_2 = int(allplays_data[j-1]['about']['periodTime'][0:2])*60 +int(allplays_data[j-1]['about']['periodTime'][3:5])
+                time_period_2 = (allplays_data[j-1]['about']['period']-1)*1200
+            
+            time_from_last = time_1 + time_period_1 -time_2 - time_period_2
+                
+
+            for key, values in p.items():
+                for i in range(len(values)):
+                    values[i] -=time_from_last
+                p[key]  = [i for i in values if i > 0]
+            
+            friendly = max(5 - (len(p['home_minor_2'])+len(p['home_minor_4'])+len(p['home_minor_4'])),3)
+            opposing = max(5 - (len(p['away_minor_2'])+len(p['away_minor_4'])+len(p['away_minor_4'])),3)
+
+            if(friendly != opposing):
+                    power_play_second +=time_from_last
+            else:
+                    power_play_second = 0
+        
+
+
+
             if(allplays_data[j]['result']['eventTypeId'] == "SHOT" or allplays_data[j]['result']['eventTypeId'] == "GOAL"):
                 event_type.append(allplays_data[j]['result']['eventTypeId'])
                 period.append(allplays_data[j]['about']['period'])
-                period_time.append(allplays_data[j]['about']['periodTime'])
+                period_time.append(allplays_data[j]['about']['periodTime'])    
                 game_id.append(df.iloc[:,i].name)
                 event_idx.append(allplays_data[j]['about']['eventIdx'])
                 team_away_name.append(df.iloc[:,i]['gameData']['teams']['away']['name'])
@@ -49,6 +89,8 @@ def tiidy(df) -> pd.DataFrame:
                 if (allplays_data[j]['players'][z]['playerType']=="Goalie" for z in range(len(allplays_data[j]['players']))):
                     goalie_name.append([allplays_data[j]['players'][z]['player']['fullName'] for z in range(len(allplays_data[j]['players']))][0])
                 empty_net.append(True if 'emptyNet' in allplays_data[j]['result'] and allplays_data[j]['result']['emptyNet']==True else False)
+                
+
                 if j> 0:
                     last_type.append(allplays_data[j-1]['result']['eventTypeId'])
                     last_period.append(allplays_data[j-1]['about']['period'])
@@ -56,8 +98,8 @@ def tiidy(df) -> pd.DataFrame:
                     last_coord_x.append(allplays_data[j-1]['coordinates']['x'] if  'x' in allplays_data[j-1]['coordinates'] else np.nan)
                     last_coord_y.append(allplays_data[j-1]['coordinates']['y'] if  'y' in allplays_data[j-1]['coordinates'] else np.nan)
                     rebound.append(allplays_data[j-1]['result']['eventTypeId']=="SHOT")
-                        
-                            
+                    
+
                 else:
                     last_type.append(np.nan)
                     last_period.append(np.nan)
@@ -65,19 +107,77 @@ def tiidy(df) -> pd.DataFrame:
                     last_coord_x.append(np.nan)
                     last_coord_y.append(np.nan)
                     rebound.append(np.nan)
+
                 
+                number_friendly.append(friendly)
+                number_opposing.append(opposing)
+                power_play.append(power_play_second)
 
-
+            
+            if(allplays_data[j]['result']['eventTypeId'] == "GOAL"):
+                if(df.iloc[:,i]['gameData']['teams']['home']['name'] == allplays_data[j]['team']['name']):
+                    if(len(p['away_minor_2'])!=0 and len(p['away_minor_4'])==0):
+                        p['away_minor_2'][0] = 0
+                    elif(len(p['away_minor_4']) != 0 and len(p['away_minor_2'])==0):
+                        if(p['away_minor_4'][0]< 120):
+                            p['away_minor_4'][0] = 0
+                        else:
+                            p['away_minor_4'][0] = 120
+                    elif(len(p['away_minor_2'])!=0 and len(p['away_minor_4'])!=0):
+                        if(p['away_minor_2'][0]<p['away_minor_4'][0]):
+                            p['away_minor_2'][0] = 0
+                        else:
+                            if(p['away_minor_4']<120):
+                                p['away_minor_4'][0] = 0
+                            else:
+                                p['away_minor_4'][0] =120
+                else:
+                    if(len(p['home_minor_2'])!=0 and len(p['home_minor_4'])==0):
+                        p['home_minor_2'][0] = 0
+                    elif(len(p['home_minor_4']) != 0 and len(p['home_minor_2'])==0):
+                        if(p['home_minor_4'][0]< 120):
+                            p['home_minor_4'][0] = 0
+                        else:
+                            p['home_minor_4'][0] = 120
+                    elif(len(p['home_minor_2'])!=0 and len(p['home_minor_4'])!=0):
+                        if(p['home_minor_2'][0]<p['home_minor_4'][0]):
+                            p['home_minor_2'][0] = 0
+                        else:
+                            if(p['home_minor_4']<120):
+                                p['home_minor_4'][0] = 0
+                            else:
+                                p['home_minor_4'][0] =120
+            
+            if(allplays_data[j]['result']['eventTypeId'] == "PENALTY"):
+                if (df.iloc[:,i]['gameData']['teams']['home']['name'] ==allplays_data[j]['team']['name']):
+                    if(allplays_data[j]['result']['penaltySeverity']=='Minor'):
+                        if(allplays_data[j]['result']['penaltyMinutes']==4):
+                            p['home_minor_4'].append(240)
+                        else:
+                            p['home_minor_2'].append(120)
+                    else:
+                        p['home_major'].append(300)
+                else:
+                    if(allplays_data[j]['result']['penaltySeverity']=='Minor'):
+                        if(allplays_data[j]['result']['penaltyMinutes']==4):
+                            p['away_minor_4'].append(240)
+                        else:
+                            p['away_minor_2'].append(120)
+                    else:
+                        p['away_major'].append(300)
+            
     assert(all(len(lists) == len(game_id) for lists in [event_idx, period_time, period, team_away_name, team_home_name, is_goal, coordinate_x,\
     coordinate_y, shot_type, strength, shooter_name, goalie_name, empty_net, team_name,\
-    event_type, last_type, last_coord_x,last_coord_y, last_period, last_period_time, rebound]) )
+    event_type, last_type, last_coord_x, last_coord_y, last_period, last_period_time, rebound, number_friendly, number_opposing, power_play]))
 
     df_main = pd.DataFrame(np.column_stack([event_idx, period_time, period, game_id, team_away_name, team_home_name, is_goal, coordinate_x,\
     coordinate_y, shot_type, strength, shooter_name, goalie_name, empty_net, team_name,\
-    event_type, last_type, last_coord_x,last_coord_y, last_period, last_period_time, rebound]),
+    event_type, last_type, last_coord_x, last_coord_y, last_period, last_period_time, rebound, number_friendly, number_opposing,\
+         power_play]),
                             columns=['event_idx', 'period_time', 'period', 'game_id', 'team_away_name', 'team_home_name','is_goal', 'coordinate_x',
                                     'coordinate_y', 'shot_type', 'strength', 'shooter_name','goalie_name', 'empty_net', 'team_name',
-                                    'event_type', 'last_type', 'last_coord_x','last_coord_y', 'last_period', 'last_period_time', 'rebound'])
+                                    'event_type', 'last_type', 'last_coord_x','last_coord_y', 'last_period', 'last_period_time', 'rebound', 
+                                    'number_friendly', 'number_opposing', 'power_play'])
     
     df_main['coordinate_x'] = df_main['coordinate_x'].astype('float')
     df_main['coordinate_y'] = df_main['coordinate_y'].astype('float')
@@ -95,19 +195,18 @@ def tiidy(df) -> pd.DataFrame:
 
     return df_main
 
-
-    
-                 
 def change_angle(df):
+ 
     change_angle = []
     speed = []
     for i in range(len(df['coordinate_x'])):
         if (df['rebound'][i]=='True'):
-            x= df['angle'][i] - df['last_angle'][i]
-            x -= 360 if x > 180 else 0
-            x += 360 if x < -180 else 0
+            if (df['angle'][i]>=0 and df['last_angle'][i] >= 0):
+                x= np.absolute(df['angle'][i] - df['last_angle'][i])
+            if (df['angle'][i] < 0 and df['last_angle'][i] < 0):
+                x = np.absolute(df['angle'][i]) + np.absolute(df['last_angle'][i])
             change_angle.append(x)
-            speed.append(x / df['time_from_last'][i])
+            speed.append(df['from_last_distance'][i] / df['time_from_last'][i])
         
         else:
              change_angle.append(0)
@@ -160,7 +259,6 @@ def angle_between(x_coor, y_coor):
             angles.append(angle)
         return angles
 
-    
 def convert_date(df):
     time_1 = df['period_time'].str.split(':', expand=True).astype(int)
     time_2 = df['last_period_time'].str.split(':',expand=True).astype(int)
