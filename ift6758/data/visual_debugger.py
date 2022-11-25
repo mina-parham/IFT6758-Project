@@ -1,7 +1,7 @@
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def get_title(left_team, right_team):
@@ -10,18 +10,21 @@ def get_title(left_team, right_team):
     Input:
     left_team: str, name of the team playing on the left side.
     right_team: str, name of the team playing on the right side.
-    
+
     Output:
     String: Title updated according to the teams position during the event
     """
 
     title_max_length = 76
-    
-    spaces_len = (title_max_length - len(left_team) - len(right_team)) // 2      ##TO set  title alignment 
-    
-    return left_team + (' ' * spaces_len) + right_team
 
-def plot_event(coordinates, left_team, right_team):    
+    spaces_len = (
+        title_max_length - len(left_team) - len(right_team)
+    ) // 2  ##TO set  title alignment
+
+    return left_team + (" " * spaces_len) + right_team
+
+
+def plot_event(coordinates, left_team, right_team):
     """
 
     Input:
@@ -32,28 +35,28 @@ def plot_event(coordinates, left_team, right_team):
     Output:
     A plot of the play made on the rink image
     """
-    
-    data = plt.imread('../figures/nhl_rink.png')     ## TO plot image
 
-    x_min = -100                      ## TO Set axis 
+    data = plt.imread("../figures/nhl_rink.png")  ## TO plot image
+
+    x_min = -100  ## TO Set axis
     x_max = 100
-    y_min = -42.5    
+    y_min = -42.5
     y_max = 42.5
 
-    plt.imshow(data, extent=[x_min, x_max, y_min, y_max])      ## TO plot graph
+    plt.imshow(data, extent=[x_min, x_max, y_min, y_max])  ## TO plot graph
 
     ax = plt.gca()
-    ax.set_facecolor('m')
-    ax.set_title(get_title(left_team, right_team))   ##TO set team name on both side 
+    ax.set_facecolor("m")
+    ax.set_title(get_title(left_team, right_team))  ##TO set team name on both side
 
     x_step = 25.0
     y_step = 21.25
     ax.set_xticks(np.arange(x_min, x_max + 1, x_step))
     ax.set_yticks(np.arange(y_min, y_max + 1, y_step))
 
-    if len(coordinates) > 1:                                                                   ##input cordinates 
-        ax.scatter([coordinates['x']], [coordinates['y']], marker='8', color='b', s=[120])   ##plot cordinates 
+    if len(coordinates) > 1:  ##input cordinates
+        ax.scatter(
+            [coordinates["x"]], [coordinates["y"]], marker="8", color="b", s=[120]
+        )  ##plot cordinates
 
     plt.show()
-    
-    
