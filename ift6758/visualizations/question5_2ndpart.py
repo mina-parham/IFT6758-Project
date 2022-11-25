@@ -1,12 +1,13 @@
 # Algorithm
 #Step 1
 # Calculate the distance of the given (x,y) co-ordinates from the opposite team rink's goal post co-ordinates (i.e., (89,0) or (-89,0)). Do this for all the events given in the csv file.'
-import os
 import csv
-import pandas as pd
-import seaborn
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn
 
 game_types = ['regular', 'playoff']
 #game_types = ['regular']
